@@ -53,6 +53,8 @@
 
 #define CC2650_FAST_RADIO_STARTUP               1
 #define WITH_FAST_SLEEP                         0
+
+#define RPL_CONF_MOP RPL_MOP_NON_STORING
 // #if RTIMER_ARCH_SECOND > 8000
 // #define CONTIKIMAC_CONF_CCA_SLEEP_TIME                    RTIMER_ARCH_SECOND / 1000
 // #else
@@ -64,8 +66,8 @@
 //#define CONTIKIMAC_CONF_SEND_SW_ACK               0
 //#define IEEE_MODE_CONF_AUTOACK               0
 
- #undef RPL_CONF_WITH_DAO_ACK
- #define RPL_CONF_WITH_DAO_ACK          0
+ //#undef RPL_CONF_WITH_DAO_ACK
+ //#define RPL_CONF_WITH_DAO_ACK          0
 
 // #define UIP_CONF_ND6_SEND_NA              1
 //#define UIP_CONF_ND6_SEND_RA                0
