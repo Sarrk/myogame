@@ -23,14 +23,16 @@
 #define QUEUEBUF_CONF_NUM          32
 #endif
 
+#define RPL_CONF_MOP RPL_MOP_NON_STORING
+
 //#define IEEE_MODE_CONF_AUTOACK               0
 // #define UIP_CONF_ND6_SEND_NA              1
 // #define UIP_CONF_ND6_SEND_RA                0
 // #define UIP_CONF_ND6_SEND_NS                0
 
 
- #undef RPL_CONF_WITH_DAO_ACK
- #define RPL_CONF_WITH_DAO_ACK          0
+ //#undef RPL_CONF_WITH_DAO_ACK
+ //#define RPL_CONF_WITH_DAO_ACK          0
 // #undef COAP_LINK_FORMAT_FILTERING
 // #define COAP_LINK_FORMAT_FILTERING     0
 // #undef COAP_PROXY_OPTION_PROCESSING
