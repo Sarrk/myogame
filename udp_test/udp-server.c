@@ -137,7 +137,7 @@ PROCESS_THREAD(udp_server_process, ev, data) {
     PRINTF("UDP server started\n\r");
 
     //set rpl to feather mode
-   // rpl_set_mode(RPL_MODE_FEATHER);
+    rpl_set_mode(RPL_MODE_FEATHER);
 
 #if RESOLV_CONF_SUPPORTS_MDNS
     resolv_set_hostname("contiki-udp-server");
