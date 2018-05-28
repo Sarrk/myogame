@@ -57,8 +57,8 @@
 #define RPL_CONF_MOP RPL_MOP_NON_STORING
 
 
-#define CSMA_CONF_MIN_BE 3
-#define CSMA_CONF_MAX_BE 5
+//#define CSMA_CONF_MIN_BE 3
+//#define CSMA_CONF_MAX_BE 5
 // #if RTIMER_ARCH_SECOND > 8000
 // #define CONTIKIMAC_CONF_CCA_SLEEP_TIME                    RTIMER_ARCH_SECOND / 1000
 // #else
