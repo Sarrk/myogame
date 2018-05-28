@@ -1,0 +1,27 @@
+obj_srf06-cc26xx/trng.o: \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/trng.c \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/trng.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_trng.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_memmap.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_ints.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/debug.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/interrupt.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_nvic.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/cpu.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_cpu_scs.h \
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/rom.h
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/trng.c :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/trng.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_trng.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_memmap.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_ints.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/debug.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/interrupt.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_nvic.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/cpu.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_cpu_scs.h :
+ /home/csse4011/contiki-git/cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/rom.h :
