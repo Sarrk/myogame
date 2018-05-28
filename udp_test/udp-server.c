@@ -72,11 +72,13 @@ static void tcpip_handler(void) {
     str = uip_appdata;
     str[uip_datalen()] = '\0';
     seq = 0;
+    PRINTF("REVIECED PACKEt\n");
     //UTC = str[0] + str[1] * 256 + str[2] * 256 * 256 + str[3] * 256 * 256 * 256;
     //recTime = clock_seconds();
     //rssi = (signed short)packetbuf_attr(PACKETBUF_ATTR_RSSI);
     if (!connection_est) {
       //  printf("Server IP %s", &server_conn->ripaddr);
+      PRINTF("Connection Est\n");
         uip_ipaddr_copy(&server_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
         connection_est = 1;
     }
@@ -137,7 +139,7 @@ PROCESS_THREAD(udp_server_process, ev, data) {
     PRINTF("UDP server started\n\r");
 
     //set rpl to feather mode
-    rpl_set_mode(RPL_MODE_FEATHER);
+   // rpl_set_mode(RPL_MODE_FEATHER);
 
 #if RESOLV_CONF_SUPPORTS_MDNS
     resolv_set_hostname("contiki-udp-server");
