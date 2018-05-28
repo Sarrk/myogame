@@ -25,6 +25,9 @@
 
 #define RPL_CONF_MOP RPL_MOP_NON_STORING
 
+#define CSMA_CONF_MIN_BE 3
+#define CSMA_CONF_MAX_BE 5
+
 //#define IEEE_MODE_CONF_AUTOACK               0
 // #define UIP_CONF_ND6_SEND_NA              1
 // #define UIP_CONF_ND6_SEND_RA                0
