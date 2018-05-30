@@ -25,10 +25,10 @@
 
 #define RPL_CONF_MOP RPL_MOP_NON_STORING
 
-#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL (RTIMER_SECOND / 2000)
+#define CONTIKIMAC_CONF_INTER_PACKET_INTERVAL (RTIMER_SECOND / 2400)
 
-#define CSMA_CONF_MAX_BACKOFF 1
-#define CSMA_CONF_MAX_FRAME_RETRIES 2
+#define CSMA_CONF_MAX_BACKOFF 1             //will try to restransmit for 2 backoff periods on collision
+#define CSMA_CONF_MAX_FRAME_RETRIES 1       //after 2 attempted retransmissons packet dropped
 
 //#define CSMA_CONF_MIN_BE 3
 //#define CSMA_CONF_MAX_BE 5
