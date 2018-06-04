@@ -79,6 +79,7 @@ def udpSendThread():
 
 # start UDP listener as a thread
 t1 = Thread(target=udpListenThread)
+t1.daemon = True
 t1.start()
 print "Listening for incoming packets on UDP port", UDP_REPLY_PORT
 
@@ -86,6 +87,7 @@ time.sleep(1)
 
 # start UDP timesync sender as a thread
 t2 = Thread(target=udpSendThread)
+t2.daemon = True
 t2.start()
 
 print "Sending timesync packets on UDP port", UDP_TIMESYNC_PORT
