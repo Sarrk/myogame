@@ -29,6 +29,9 @@ erase:
 prog:
 	/home/csse4011/uniflash_4.1/deskdb/content/TICloudAgent/linux/ccs_base/DebugServer/bin/DSLite load -c $(CCXML_FILE) -f $(CONTIKI_PROJECT).elf
 	
+progcal: 
+	$(HOME)/Downloads/DSLite/DebugServer/bin/DSLite load -c ~/Downloads/DSLite/CC2650F128_TIXDS110_Connection.ccxml -f $(CONTIKI_PROJECT).elf
+
 #$(UNIFLASH) --config $(CCXML_FILE) $(CONTIKI_PROJECT).elf --before Erase
 reset:
 	$(UNIFLASH) --config $(CCXML_FILE) --post-flash-device-cmd PinReset
