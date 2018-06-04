@@ -80,7 +80,7 @@ void init_udp(void) {
 
     uip_ip6addr(&rpl_ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0x1);
 
-    //Create UDP socket and bind to port 3000
+    //Create UDP socket that listens for packets to PORT:3000 ***from*** PORT:3001
     client_conn = udp_new(&rpl_ipaddr, UIP_HTONS(3001), NULL);
     udp_bind(client_conn, UIP_HTONS(3000));
 

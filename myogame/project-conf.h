@@ -12,7 +12,9 @@
 //#define NETSTACK_CONF_RDC     nullrdc_driver
 //#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 32
 #define CC2650_FAST_RADIO_STARTUP               1
+#ifdef WITH_FAST_SLEEP
 #define WITH_FAST_SLEEP                         0
+#endif
 //#define CONTIKIMAC_CONF_SEND_SW_ACK               0
 //#define CONTIKIMAC_CONF_MAX_SILENCE_PERIODS 10
 

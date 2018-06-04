@@ -9,8 +9,9 @@ from threading import Thread
 import sys
 
 
-UDP_TIMESYNC_PORT = 3000 # node listens for timesync packets on port 4003
-UDP_REPLY_PORT = 3001 # node listens for reply packets on port 7005
+# note that the node will only accept packets from the port that it is sending to...
+UDP_OUTGOING_PORT = 3000 # Node listens for packets on this port
+UDP_INCOMING_PORT = 3001 # Script listens for packets on this port
 
 M2_IP = "aaaa::212:4b00:799:9a01"
 # M1_IP = "aaaa::212:4b00:7b4:a106"
@@ -19,9 +20,11 @@ M1_IP = "aaaa::212:4b00:799:9502"
 
 isRunning = True
 
+# Create the socket that will listen for packets from the node
+# Note that we don't really care what port the packets come from
 sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sock.bind(('', UDP_REPLY_PORT))
+sock.bind(('', UDP_INCOMING_PORT))
 
 seq = 0
 rec = 0
@@ -29,10 +32,7 @@ rec = 0
 
 def udpListenThread():
 
-  # listen on UDP socket port UDP_TIMESYNC_PORT
-
- 
-  
+  # Listen to UDP_INCOMING_PORT
 
   while isRunning:
     
@@ -58,39 +58,36 @@ def udpListenThread():
     
 def udpSendThread():
 
-  #sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, 0)
+  # Send to UDP_OUTGOING_PORT, packets will originate from UDP_INCOMING_PORT
 
   while isRunning:
     if (rec != 1):
       timestamp = int(time.time())
-      print "Sending timesync packet with UTC[s]:", timestamp, "Localtime:", time.strftime("%Y-%m-%d %H:%M:%S")
+   #   print "Sending timesync packet with UTC[s]:", timestamp, "Localtime:", time.strftime("%Y-%m-%d %H:%M:%S")
       buf = "%s" % (timestamp)
    # print "TIMESTAMP AS STRING: " + buf
-    # send UDP packet to nodes - Replace addresses with your sensortag routing address (e.g. aaaa::<sensortag ID>)
-   # sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:7b4:a106", UDP_TIMESYNC_PORT))
-      sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:799:9a01", UDP_TIMESYNC_PORT))
+      sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:799:9a01", UDP_OUTGOING_PORT))
       seq = 0
-  #  sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:799:c87", UDP_TIMESYNC_PORT))
-    sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:688:f83", UDP_TIMESYNC_PORT))
-    sock.sendto(struct.pack("I", timestamp), (M1_IP, UDP_TIMESYNC_PORT))
-    # sleep for 10 seconds
-    time.sleep(5)
+      sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:688:f83", UDP_OUTGOING_PORT))
+      sock.sendto(struct.pack("I", timestamp), (M1_IP, UDP_OUTGOING_PORT))
+    # sleep for 5 seconds
+      time.sleep(5)
 
 
 # start UDP listener as a thread
 t1 = Thread(target=udpListenThread)
 t1.daemon = True
+print "Listening for packets on UDP port ", UDP_INCOMING_PORT
 t1.start()
-print "Listening for incoming packets on UDP port", UDP_REPLY_PORT
 
 time.sleep(1)
 
 # start UDP timesync sender as a thread
 t2 = Thread(target=udpSendThread)
 t2.daemon = True
+print "Sending packets to UDP port ", UDP_OUTGOING_PORT, "from port ", UDP_INCOMING_PORT
 t2.start()
 
-print "Sending timesync packets on UDP port", UDP_TIMESYNC_PORT
 print "Exit application by pressing (CTRL-C)"
 
 try:
