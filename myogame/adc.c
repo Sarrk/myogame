@@ -42,8 +42,9 @@ int sample_adc(void) {
     /* Connect AUX IO7 (DIO23, but also DP2 on XDS110) as analog input. */
     ti_lib_aux_adc_select_input(ADC_COMPB_IN_AUXIO7);
 
-    /* Set up ADC range, AUXADC_REF_FIXED = nominally 4.3 V */
-    ti_lib_aux_adc_enable_sync(AUXADC_REF_FIXED, AUXADC_SAMPLE_TIME_2P7_US,
+    /* Set up ADC range, AUXADC_REF_VDDS_REL = VDDS for maximum headroom as the signal
+    is never going to exceed this*/
+    ti_lib_aux_adc_enable_sync(AUXADC_REF_VDDS_REL, AUXADC_SAMPLE_TIME_2P7_US,
                                AUXADC_TRIGGER_MANUAL);
 
     /* Trigger ADC converting */
