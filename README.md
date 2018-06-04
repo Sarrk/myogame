@@ -1,3 +1,35 @@
+# TODO
+
+## Tag
+Increase UDP if possible
+
+Get ADC working
+
+Add DMA to get ADC even faster
+
+Can/should we oversample and rudimentally process that to send packets with more information? Or send larger packets with oversampled frames?
+
+
+## Python
+ML/Process datastreams from tags
+
+Add game code to myogame.py
+
+Integrate clean control signal
+
+Configuration of player/tag
+
+(Multiplayer or mutlisense?)
+
+Graphical display at least for troubleshooting-debugging
+
+
+## Poster
+((( fill this in )))
+
+## Presentation
+We should probably rehearse
+
 # MYOGAME
 
 Using the myoWare Muscle sensor on a TI Sensortag to interface with a python game over UDP.
