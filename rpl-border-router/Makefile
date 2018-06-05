@@ -12,6 +12,10 @@ CCXML_FILE = $(HOME)/contiki-examples/tools/sensortag.ccxml
 #linker optimizations
 SMALL=1
 
+DEFINES += UIP_CONF_ND6_SEND_NS
+DEFINES += UIP_CONF_ND6_SEND_NA
+
+
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 PROJECT_SOURCEFILES += slip-bridge.c
 
@@ -27,7 +31,7 @@ PROJECT_SOURCEFILES += slip-bridge.c
 #of the slip connection. Large MSS together with low baud rates without flow
 #control will overrun the transmit buffer when the style sheet is requested.
 
-WITH_WEBSERVER=0
+WITH_WEBSERVER=1
 ifeq ($(WITH_WEBSERVER),1)
 CFLAGS += -DUIP_CONF_TCP=1
 CFLAGS += -DWEBSERVER=1

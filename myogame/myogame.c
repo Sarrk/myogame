@@ -28,7 +28,7 @@
 
 #define DEBUG DEBUG_PRINT
 
-#define SAMPLE_FREQ 90
+#define SAMPLE_FREQ 30
 #define SAMPLE_INTERVAL CLOCK_SECOND / SAMPLE_FREQ
 
 PROCESS(sensor_process, "Sensor process");
@@ -139,7 +139,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
                 sensorData.accY = avgData.accY/AVERAGE;
                 sensorData.accZ = avgData.accZ/AVERAGE;
                 
-                sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
+                sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d\r\n", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
                 udp_send(msg);
 
                 avg_cnt = 0;
