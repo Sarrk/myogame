@@ -5,10 +5,11 @@ Increase UDP if possible
 
 Test ADC on myoware
 
-Add DMA to get ADC even faster 
+<strike>Add DMA to get ADC even faster</strike>
+>tag already runs satisfactorily at 50Hz, DMA may be interesting for reducing power consumption but is beyond the scope of this project ;)
 
 Can/should we oversample and rudimentally process that to send packets with more information? Or send larger packets with oversampled frames?
-
+>implemented oversampling/averaging @ 3 samples, tested working on the tag at 90Hz for an average of 30Hz
 
 ## Python
 ML/Process datastreams from tags

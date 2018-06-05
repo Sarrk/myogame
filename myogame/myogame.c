@@ -28,7 +28,7 @@
 
 #define DEBUG DEBUG_PRINT
 
-#define SAMPLE_FREQ 50
+#define SAMPLE_FREQ 90
 #define SAMPLE_INTERVAL CLOCK_SECOND / SAMPLE_FREQ
 
 PROCESS(sensor_process, "Sensor process");
@@ -36,6 +36,9 @@ PROCESS(udp_process, "UDP process");
 AUTOSTART_PROCESSES(&sensor_process, &udp_process);         //sensor process will be started after calibration
 
 int cnt = 0;
+int avg_cnt = 0;
+
+#define AVERAGE 3
 
 
 typedef struct myoData {
@@ -51,7 +54,7 @@ typedef struct myoData {
 uint8_t mode = 0x07;       //will be changed in calibration
 
 myoData sensorData;
-
+myoData avgData;
 
 
 /*---------------------------------------------------------------------------*/
@@ -116,9 +119,38 @@ PROCESS_THREAD(sensor_process, ev, data) {
     init_udp();
      while(1) {
          PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_CONTINUE);
+         
         if(data != NULL) {
-            sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
-            udp_send(msg);
+            avg_cnt++;
+            avgData.adc += sensorData.adc;
+            avgData.gyroX += sensorData.gyroX;
+            avgData.gyroY += sensorData.gyroY;
+            avgData.gyroZ += sensorData.gyroZ;
+            avgData.accX += sensorData.accX;
+            avgData.accY += sensorData.accY;
+            avgData.accZ += sensorData.accZ;
+
+            if(avg_cnt == AVERAGE) {
+                sensorData.adc = avgData.adc/AVERAGE;
+                sensorData.gyroX = avgData.gyroX/AVERAGE;
+                sensorData.gyroY = avgData.gyroY/AVERAGE;
+                sensorData.gyroZ = avgData.gyroZ/AVERAGE;
+                sensorData.accX = avgData.accX/AVERAGE;
+                sensorData.accY = avgData.accY/AVERAGE;
+                sensorData.accZ = avgData.accZ/AVERAGE;
+                
+                sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
+                udp_send(msg);
+
+                avg_cnt = 0;
+                avgData.adc = 0;
+                avgData.gyroX = 0;
+                avgData.gyroY = 0;
+                avgData.gyroZ = 0;
+                avgData.accX = 0;
+                avgData.accY = 0;
+                avgData.accZ = 0;
+            }                
         }
      }
 
