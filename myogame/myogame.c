@@ -29,7 +29,13 @@
 #define DEBUG DEBUG_PRINT
 
 #define SAMPLE_FREQ 30
+// Measured 10Hz @ 30
+// Measured 15Hz @ 60
+// Measured 54Hz @ 90???? - and it craps out when moved
+// Gets 30Hz@90 wired, but the wireless connection has problems
 #define SAMPLE_INTERVAL CLOCK_SECOND / SAMPLE_FREQ
+
+
 
 PROCESS(sensor_process, "Sensor process");
 PROCESS(udp_process, "UDP process");
@@ -51,7 +57,7 @@ typedef struct myoData {
     int gyroZ;
 }  myoData;
 
-uint8_t mode = 0x07;       //will be changed in calibration
+uint8_t mode = (0x01 | 0x02);       //will be changed in calibration
 
 myoData sensorData;
 myoData avgData;
@@ -65,7 +71,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
     if (mode & 0x01) {
         init_adc();
     }
-    if (mode & 0x06) {
+    if ((mode & 0x02) | (mode & 0x04) | (mode & 0x06)) {
         mpu_9250_sensor.configure(SENSORS_HW_INIT, 1);
     }
 
@@ -78,11 +84,13 @@ PROCESS_THREAD(sensor_process, ev, data) {
                 sensorData.adc = sample_adc();
             }
             if (mode & 0x02) {
+                // Units are centi-G according to the driver file
                 sensorData.accX = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_X);
                 sensorData.accY = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Y);
                 sensorData.accZ = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_ACC_Z);
             }
             if (mode & 0x04) {
+                // Units are centi-deg/sec according to driver file
                 sensorData.gyroX = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_X);
                 sensorData.gyroY = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_Y);
                 sensorData.gyroZ = mpu_9250_sensor.value(MPU_9250_SENSOR_TYPE_GYRO_Z);
@@ -117,7 +125,10 @@ PROCESS_THREAD(sensor_process, ev, data) {
     PROCESS_BEGIN();
     
     init_udp();
-     while(1) {
+    
+    NETSTACK_MAC.off(1);
+
+    while(1) {
          PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_CONTINUE);
          
         if(data != NULL) {

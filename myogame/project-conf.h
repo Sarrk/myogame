@@ -9,8 +9,8 @@
 
 
 // #define NETSTACK_CONF_NETWORK sicslowpan_driver
- //#define NETSTACK_CONF_MAC     nullmac_driver
-//#define NETSTACK_CONF_RDC     nullrdc_driver
+#define NETSTACK_CONF_MAC     nullmac_driver
+#define NETSTACK_CONF_RDC     nullrdc_driver
 //#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 32
 #define CC2650_FAST_RADIO_STARTUP               1
 //#define WITH_FAST_SLEEP                         0 // Gets clobbered by contiki-conf.h

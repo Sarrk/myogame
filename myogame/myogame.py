@@ -13,9 +13,9 @@ import sys
 UDP_OUTGOING_PORT = 3000 # Node listens for packets on this port
 UDP_INCOMING_PORT = 3001 # Script listens for packets on this port
 
-M2_IP = "aaaa::212:4b00:799:9a01"
-# M1_IP = "aaaa::212:4b00:7b4:a106"
-M1_IP = "aaaa::212:4b00:799:9502"
+# M2_IP = "aaaa::212:4b00:799:9a01"
+## M1_IP = "aaaa::212:4b00:7b4:a106"
+# M1_IP = "aaaa::212:4b00:799:9502"
 
 
 isRunning = True
@@ -45,7 +45,7 @@ def udpListenThread():
       # Catch IP of tags not already "synchronised" with our system
       if(addr[0] not in tags):
         tags.append(addr[0])
-        print "gottem", tags
+        print "Tags: ", tags
 
     except socket.timeout:
       print "Got error"
