@@ -30,6 +30,8 @@ seq = 0
 rec = 0
 #f = open('output', 'w')
 
+tags = []
+
 def udpListenThread():
 
   # Listen to UDP_INCOMING_PORT
@@ -37,23 +39,16 @@ def udpListenThread():
   while isRunning:
     
     try:
-      rec =1
-      data, addr = sock.recvfrom( 1024 )
-   #   seq =seq +1
-    #  time, rssi = data.split(',')
-    #  timestamp = int(time)
-    #  utc = datetime.datetime.fromtimestamp(timestamp)
-   #   dist = (abs(int(rssi)) - 20)
-      #if (dist > 5) :
-      #  dist -= 5
-    #  dist *= 3
-   #   print "Reply from:", addr[0], "UTC[s]:", timestamp, "Localtime:", utc.strftime("%Y-%m-%d %H:%M:%S"), "Distance: ", dist, "cm"
-      print "Reply from:", addr[0],"\t", data
-     # f.write(addr[0] + "\n")
+      data, addr = sock.recvfrom( 1024 ) # Addr[0] is IP, Addr[1] is port 
+      print addr[0], "sent:\t", data 
       
+      # Catch IP of tags not already "synchronised" with our system
+      if(addr[0] not in tags):
+        tags.append(addr[0])
+        print "gottem", tags
+
     except socket.timeout:
-      print "reply from:", addr[0], "\t", data
-      rec =1
+      print "Got error"
       pass
     
 def udpSendThread():

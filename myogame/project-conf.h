@@ -1,4 +1,5 @@
-
+#ifndef PROJECT_CONF_H_
+#define PROJECT_CONF_H_
 
 
 
@@ -12,9 +13,7 @@
 //#define NETSTACK_CONF_RDC     nullrdc_driver
 //#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 32
 #define CC2650_FAST_RADIO_STARTUP               1
-#ifdef WITH_FAST_SLEEP
-#define WITH_FAST_SLEEP                         0
-#endif
+//#define WITH_FAST_SLEEP                         0 // Gets clobbered by contiki-conf.h
 //#define CONTIKIMAC_CONF_SEND_SW_ACK               0
 //#define CONTIKIMAC_CONF_MAX_SILENCE_PERIODS 10
 
@@ -39,3 +38,5 @@
 // #define COAP_LINK_FORMAT_FILTERING     0
 // #undef COAP_PROXY_OPTION_PROCESSING
 // #define COAP_PROXY_OPTION_PROCESSING   0
+
+#endif // PROJECT_CONF_H_

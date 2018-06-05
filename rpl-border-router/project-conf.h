@@ -52,7 +52,7 @@
 #endif
 
 #define CC2650_FAST_RADIO_STARTUP               1
-#define WITH_FAST_SLEEP                         0
+//#define WITH_FAST_SLEEP                         0 // Gets clobbered by contiki-conf.h regardless of what we do
 
 #define RPL_CONF_MOP RPL_MOP_NON_STORING
 // #if RTIMER_ARCH_SECOND > 8000

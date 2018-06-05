@@ -28,7 +28,7 @@
 
 #define DEBUG DEBUG_PRINT
 
-#define SAMPLE_FREQ 1
+#define SAMPLE_FREQ 50
 #define SAMPLE_INTERVAL CLOCK_SECOND / SAMPLE_FREQ
 
 PROCESS(sensor_process, "Sensor process");
@@ -48,7 +48,7 @@ typedef struct myoData {
     int gyroZ;
 }  myoData;
 
-uint8_t mode = 0x07;        //will be changed in calibration
+uint8_t mode = 0x07;       //will be changed in calibration
 
 myoData sensorData;
 
@@ -71,6 +71,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
         PROCESS_YIELD();
         if(etimer_expired(&adc_et)) {
             if (mode & 0x01) {
+                // The maximum ADC value is 4096 (12-bit ADC)
                 sensorData.adc = sample_adc();
             }
             if (mode & 0x02) {
@@ -108,7 +109,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
  */
  PROCESS_THREAD(udp_process, ev, data) {
     
-    char msg[50];
+    char msg[200];
     
     PROCESS_BEGIN();
     
@@ -116,7 +117,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
      while(1) {
          PROCESS_WAIT_EVENT_UNTIL(ev == PROCESS_EVENT_CONTINUE);
         if(data != NULL) {
-            sprintf(msg, "Received message %03d - %d", cnt++, sensorData.adc);
+            sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
             udp_send(msg);
         }
      }

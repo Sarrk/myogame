@@ -3,9 +3,9 @@
 ## Tag
 Increase UDP if possible
 
-Get ADC working
+Test ADC on myoware
 
-Add DMA to get ADC even faster
+Add DMA to get ADC even faster 
 
 Can/should we oversample and rudimentally process that to send packets with more information? Or send larger packets with oversampled frames?
 
