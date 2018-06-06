@@ -57,7 +57,7 @@ typedef struct myoData {
     int gyroZ;
 }  myoData;
 
-uint8_t mode = (0x01 | 0x02);       //will be changed in calibration
+uint8_t mode = 0x07;       //will be changed in calibration
 
 myoData sensorData;
 myoData avgData;
@@ -150,7 +150,7 @@ PROCESS_THREAD(sensor_process, ev, data) {
                 sensorData.accY = avgData.accY/AVERAGE;
                 sensorData.accZ = avgData.accZ/AVERAGE;
                 
-                sprintf(msg, "Sending data (%03d) - ADC: %d, Gx: %d, Gy: %d, Gz: %d, Ax: %d, Ay: %d, Az: %d\r\n", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
+                sprintf(msg, "%d,%d,%d,%d,%d,%d,%d,%d\r\n", cnt++, sensorData.adc, sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ, sensorData.accX, sensorData.accY, sensorData.accZ);
                 udp_send(msg);
 
                 avg_cnt = 0;

@@ -13,9 +13,9 @@ import sys
 UDP_OUTGOING_PORT = 3000 # Node listens for packets on this port
 UDP_INCOMING_PORT = 3001 # Script listens for packets on this port
 
-# M2_IP = "aaaa::212:4b00:799:9a01"
-## M1_IP = "aaaa::212:4b00:7b4:a106"
-# M1_IP = "aaaa::212:4b00:799:9502"
+FOOT_TAG = "aaaa::212:4b00:799:9a01"
+RIGH_HAND_TAG = "aaaa::212:4b00:7b4:a106"
+LEFT_HAND_TAG = "aaaa::212:4b00:799:9502"
 
 
 isRunning = True
@@ -28,19 +28,26 @@ sock.bind(('', UDP_INCOMING_PORT))
 
 seq = 0
 rec = 0
+
 #f = open('output', 'w')
 
 tags = []
 
 def udpListenThread():
-
+  printCtr = 0
+  ipa = 0
   # Listen to UDP_INCOMING_PORT
-
+  f = open("raw_data.csv", "w")
   while isRunning:
     
     try:
       data, addr = sock.recvfrom( 1024 ) # Addr[0] is IP, Addr[1] is port 
-      print addr[0], "sent:\t", data 
+      seq = int(data.split(',')[0])
+      if ((seq % 5) == 0):
+          print addr[0][-10:], "sent:\t", data
+          ipa = addr[0]
+          printCtr = 0
+      printCtr+= 1
       
       # Catch IP of tags not already "synchronised" with our system
       if(addr[0] not in tags):
@@ -57,14 +64,6 @@ def udpSendThread():
 
   while isRunning:
     if (rec != 1):
-      timestamp = int(time.time())
-   #   print "Sending timesync packet with UTC[s]:", timestamp, "Localtime:", time.strftime("%Y-%m-%d %H:%M:%S")
-      buf = "%s" % (timestamp)
-   # print "TIMESTAMP AS STRING: " + buf
-      sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:799:9a01", UDP_OUTGOING_PORT))
-      seq = 0
-      sock.sendto(struct.pack("I", timestamp), ("aaaa::212:4b00:688:f83", UDP_OUTGOING_PORT))
-      sock.sendto(struct.pack("I", timestamp), (M1_IP, UDP_OUTGOING_PORT))
     # sleep for 5 seconds
       time.sleep(5)
 
