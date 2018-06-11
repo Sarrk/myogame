@@ -6,7 +6,8 @@ import datetime
 import struct
 from threading import Thread
 import sys
-
+import time
+import math
 from kal import Kalman
 
 
@@ -36,7 +37,7 @@ tags = []
 
 buffer = []
 roll = 0
-pitch = 0
+pitch  = 0
 #Starting roll and pitch
 kalmanX = Kalman()
 kalmanY = Kalman()
@@ -46,39 +47,63 @@ kalAngleY = 0
 gyroXangle = 0
 gyroYangle = 0
 timer = 0
+gyroXrate = 0
+gyroYrate = 0
 
 def udpListenThread():
+    seq = 0
+    gyroX = 0
 
     while isRunning:
         
         try:
-            data, addr = sock.recvfrom( 1024 ) # Addr[0] is IP, Addr[1] is port 
-            data_arr = data.decode().split(',') #seq, myo, Gyro, Acc
-            seq = int(data_arr[0])
-            accX = int(data_arr[5])
-            accY = int(data_arr[6])
-            accZ = int(data_arr[7])
-            gyroX = int(data_arr[2])
-            gyroY = int(data_arr[3])
-            gyroZ = int(data_arr[4])
-            loop(accX, accY, accZ, gyroX, gyroY, gyroZ)
+            #data, addr = sock.recvfrom( 1024 ) # Addr[0] is IP, Addr[1] is port 
+            #data_arr = data.decode().split(',') #seq, myo, Gyro, Acc
+            seq += 1
+            accX = 100
+            accY = 0
+            accZ = 0
+            gyroY = 0
+            gyroZ = 0
+            data = [seq, seq %20,gyroX, gyroY, gyroZ, accX, accY, accZ]
+            kalman_iterate(accX, accY, accZ, gyroX, gyroY, gyroZ)
 
-            if ((seq % 5) == 0):
-                print (addr[0][-10:], "sent:\t", data)
-                print_stats(roll, gyroXangle, kalAngleX, pitch, gyroYangle, kalAngleY)
+            if ((seq % 1) == 0):
+                #print (addr[0][-10:], "sent:\t", data)
+                print(data)
+                gyroX += 1
+               # gyroX = (gyroX - 180) %180 + 180
+                #gyroY -= 1
+                print_stats()
+                
             if ((seq % 20) == 0):
                 kalman_setup(accX, accY, accZ, gyroX, gyroY, gyroZ)
+                accX += 20
+              #  accX = (accX -180) % 180 + 180
+                
             
             # Catch IP of tags not already "synchronised" with our system
-            if(addr[0] not in tags):
-                tags.append(addr[0])
-                print ("Tags: ", tags)
+            #if(addr[0] not in tags):
+              #  tags.append(addr[0])
+             #   print ("Tags: ", tags)
+            time.sleep(1)
 
         except socket.timeout:
             print ("Got error")
             pass
 
 def kalman_setup(accX, accY, accZ, gyroX, gyroY, gyroZ):
+    global timer
+    global kalmanX
+    global kalmanY
+    global roll
+    global pitch
+    global kalAngleX
+    global kalAngleY
+    global gyroXangle
+    global gyroYangle
+    global gyroXrate
+    global gyroYrate
     roll = calc_roll(accX, accY, accZ)
     pitch = calc_pitch(accX, accY, accZ)
     #Starting roll and pitch
@@ -87,43 +112,58 @@ def kalman_setup(accX, accY, accZ, gyroX, gyroY, gyroZ):
 
     gyroXangle = roll
     gyroYangle = pitch
-    timer = Sys.time()
+    timer = time.time() * 1000000
 
-def loop(accX, accY, accZ, gyroX, gyroY, gyroZ):
-    dt = (Sys.time() - timer) #FIND UNITS FOR this
-    timer = Sys.time()
+def kalman_iterate(accX, accY, accZ, gyroX, gyroY, gyroZ):
+    global timer
+    global kalmanX
+    global kalmanY
+    global roll
+    global pitch
+    global kalAngleX
+    global kalAngleY
+    global gyroXangle
+    global gyroYangle
+    global gyroXrate
+    global gyroYrate
+    dt = (time.time() * 1000000 - timer) / 1000000
+    timer = time.time() * 1000000
     roll = calc_roll(accX, accY, accZ)
     pitch = calc_pitch(accX, accY, accZ)
 
-    gyroXrate = gyroX * 100 #These should be in deg/s
-    gyroYrate = gyroY * 100
+    gyroXrate = gyroX / 20  #These should be in deg/s
+    gyroYrate = gyroY /20
 
     if ((roll < -90 and kalAngleX > 90) or (roll > 90 and kalAngleX < -90)):
         kalmanX.setAngle(roll)
     else:
         kalAngleX = kalmanX.getAngle(roll, gyroXrate, dt)
     
-    if (Math.abs(kalAngleX) > 90):
+    if (abs(kalAngleX) > 90):
         gyroYrate = -gyroYrate
         kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt)
 
     gyroXangle += gyroXrate * dt # Calculate gyro angle without any filter
     gyroYangle += gyroYrate * dt
 
-    if (gyroXangle < -180 or gyroXangle > 180):
+    if (gyroXangle < -180  or gyroXangle > 180):
+        print("gyro and kal same")
         gyroXangle = kalAngleX
     if (gyroYangle < -180 or gyroYangle > 180):
         gyroYangle = kalAngleY
 
-def print_stats(roll, gyroXangle, kalAngleX, pitch, gyroYangle, kalAngleY):
+def print_stats():
     print("X\tRoll: ", roll, "\tGyro: ", gyroXangle, "\tKalAngle: ", kalAngleX)
     print("Y\tPitch: ", pitch, "\tGyro: ", gyroYangle, "\tKalAngle: ", kalAngleY)
 
 def calc_roll(accX, accY, accZ):
-    return atan2(accY, accZ) * RAD_TO_DEG
+    return math.atan2(accY, accZ) * 180/math.pi
 
 def calc_pitch(accX, accY, accZ):
-    return atan(-accX / sqrt(accY * accY * accZ * accZ)) * RAD_TO_DEG
+    try:
+        return math.atan(-accX / math.sqrt(accY * accY * accZ * accZ)) * 180/math.pi
+    except:
+        return pitch
 
 
 
