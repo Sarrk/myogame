@@ -114,7 +114,7 @@ def udpListenThread():
                 os.remove(oldest)
 
             if ((seq % 5) == 0):
-                print (addr[0][-10:], "sent:\t", data)
+                # print (addr[0][-10:], "sent:\t", data)
                 ipa = addr[0]
                 printCtr = 0
             printCtr+= 1
@@ -166,29 +166,46 @@ def getInputKeys(command):
         acc_z = df['acc_z'][0]
 
         if (ip == ips["lf"]):            # left foot
-            mapped = np.interp(myo, [1300, 2500], [0,1])
-            # print ("lf", myo, mapped)
-            av = moving_av(mapped, 5, buffer_brake)
-            # actions[2] = av
+            if (myo > 1300 and myo < 2500):
+                mapped = ((float(myo) - 1300)/ 1200)
+            elif (myo > 2500):
+                mapped = 1
+            else: mapped = 0
+            # mapped = np.interp(myo, [1300, 2500], [0,1])
+            print ("lf", myo, mapped)
+            av = moving_av(mapped, 2, buffer_brake)
+            actions[2] = av
         elif (ip == ips["rf"]):         # right foot
-            mapped = np.interp(myo, [1000, 2000], [0,1])
-            # print ("rf", myo, mapped)
-            av = moving_av(mapped, 5, buffer_throttle)
-            # actions[1] = av
-            # actions[1] = mapped
-        elif (ip == ips["l1"]):         # left hand
-            mapped = np.interp(acc_z, [100, -100], [-1,1])
-            # print("l1", acc_z, mapped)
-            av = moving_av(mapped, 5, buffer_steering)
-            # actions[0] = av
-        elif (ip == ips["r1"]):         # right hand
-            mapped = np.interp(acc_z, [-100, 100], [-1,1])
-            # print("r1", acc_z, mapped)
-            av = moving_av(mapped, 5, buffer_steering)
-            # actions[0] = av
+            if (myo > 1000 and myo < 2000):
+                mapped = ((float(myo) - 1000)/ 1000)
+            elif (myo > 2000):
+                mapped = 1
+            else: mapped = 0
 
-        print (np.mean(buffer_steering), "\t", np.mean(buffer_throttle), "\t", np.mean(buffer_brake))
-        actions = [np.mean(buffer_steering), np.mean(buffer_throttle), np.mean(buffer_brake)]
+            # mapped = np.interp(myo, [1000, 2000], [0,1])
+            print ("rf", myo, mapped)
+            av = moving_av(mapped, 2, buffer_throttle)
+            # actions[1] = av
+            actions[1] = mapped
+        elif (ip == ips["l1"]):         # left hand
+            if (acc_z < 100 and acc_z > -100):
+                mapped = float(acc_z) / -100
+            else: mapped = 0
+            # mapped = np.interp(float(acc_z), [100.0, 0.0, -100.0], [-1.0, 0.0, 1.0])
+            print("l1", acc_z, mapped)
+            av = moving_av(mapped, 2, buffer_steering)
+            actions[0] = av
+        elif (ip == ips["r1"]):         # right hand
+            if (acc_z < 100 and acc_z > -100):
+                mapped = float(acc_z) / 100
+            else: mapped = 0
+            # mapped = np.interp(float(acc_z), [-100.0, 0.0, 100.0], [-1.0, 0.0, 1.0])
+            print("r1", acc_z, mapped)
+            av = moving_av(mapped, 2, buffer_steering)
+            actions[0] = av
+
+        # print (np.mean(buffer_steering), "\t", np.mean(buffer_throttle), "\t", np.mean(buffer_brake))
+        # actions = [np.mean(buffer_steering), np.mean(buffer_throttle), np.mean(buffer_brake)]
 
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -229,6 +246,9 @@ def updateGameEnv():
 
 # --------------------------------------------------------------
 q = LifoQueue()
+# q_rf = LifoQueue()
+# q_l1 = LifoQueue()
+# q_l2 = LifeQueue()
 
 # start UDP listener as a thread
 t1 = Thread(target=udpListenThread)
