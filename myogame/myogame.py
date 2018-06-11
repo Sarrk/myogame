@@ -12,6 +12,7 @@ from random import randrange
 import os
 import numpy as np
 
+
 # multithreading
 from queue import LifoQueue
 
@@ -34,7 +35,7 @@ pygame.init()
 pygame.key.set_repeat(1, 40)
 
 # init game env
-env = gym.make('MountainCar-v0')
+env = gym.make('CarRacing-v0')
 env.reset()
 
 
@@ -62,7 +63,9 @@ rec = 0
 
 tags = []
 
-buffer = []
+buffer_throttle = []
+buffer_brake = []
+buffer_steering = []
 
 def udpListenThread():
     printCtr = 0
@@ -84,7 +87,8 @@ def udpListenThread():
             index = pd.DatetimeIndex(end=now * 1e9, 
                                      freq=pd.Timedelta(freq), 
                                      periods=1)
-            df = pd.DataFrame({ "myo":[int(data_arr[1])],
+            df = pd.DataFrame({ "ip":[addr[0][-10:]],
+                                "myo":[int(data_arr[1])],
                                 "gyro_x":[int(data_arr[2])], 
                                 "gyro_y":[int(data_arr[3])], 
                                 "gyro_z":[int(data_arr[4])], 
@@ -135,7 +139,7 @@ def udpSendThread():
 
 # SIMULATION CODE
 # --------------------------------------------------------------
-def moving_av(val, frame):
+def moving_av(val, frame, buffer):
     if (len(buffer) >= frame):
         buffer.pop(0)
     
@@ -143,29 +147,65 @@ def moving_av(val, frame):
     return np.mean(buffer)
 
 def getInputKeys(command):
+    ips = {"lf":"0:7b4:f004",
+           "rf":"0:799:9685",
+           "l1":"0:799:f485",
+           "r1":"0:799:6a06"}
+
+    # actions = env.action_space.sample()
+    # print (actions)
+    actions = [0, 0, 0]
+    # env.step(env.action_space.sample())
+    # return actions 
     if (not q.empty()):
         command = 1
-
         df = q.get()
+
+        ip = df['ip'][0]
         myo = df['myo'][0]
-        av = moving_av(myo, 2)
-        print (myo, av)
+        acc_z = df['acc_z'][0]
 
-        if (av > 1000):
-            command = 2
+        if (ip == ips["lf"]):            # left foot
+            mapped = np.interp(myo, [1300, 2500], [0,1])
+            # print ("lf", myo, mapped)
+            av = moving_av(mapped, 5, buffer_brake)
+            # actions[2] = av
+        elif (ip == ips["rf"]):         # right foot
+            mapped = np.interp(myo, [1000, 2000], [0,1])
+            # print ("rf", myo, mapped)
+            av = moving_av(mapped, 5, buffer_throttle)
+            # actions[1] = av
+            # actions[1] = mapped
+        elif (ip == ips["l1"]):         # left hand
+            mapped = np.interp(acc_z, [100, -100], [-1,1])
+            # print("l1", acc_z, mapped)
+            av = moving_av(mapped, 5, buffer_steering)
+            # actions[0] = av
+        elif (ip == ips["r1"]):         # right hand
+            mapped = np.interp(acc_z, [-100, 100], [-1,1])
+            # print("r1", acc_z, mapped)
+            av = moving_av(mapped, 5, buffer_steering)
+            # actions[0] = av
 
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_LEFT:
-                    # print("LEFT")
-                    command = 0
-                elif event.key == K_RIGHT:
-                    # print("RIGHT")
-                    command = 2
-                elif event.key == K_q:
-                    pygame.quit()
-                    sys.exit()
-    return command
+        print (np.mean(buffer_steering), "\t", np.mean(buffer_throttle), "\t", np.mean(buffer_brake))
+        actions = [np.mean(buffer_steering), np.mean(buffer_throttle), np.mean(buffer_brake)]
+
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_LEFT:
+                # print("LEFT")
+                actions[0]= -1
+            if event.key == K_RIGHT:
+                # print("RIGHT")
+                actions[0] = 1
+            if event.key == K_UP:
+                actions[1] = 1
+            if event.key == K_DOWN:
+                actions[2] = 1
+            elif event.key == K_q:
+                pygame.quit()
+                sys.exit()
+    return actions
 
 def updateGameEnv():
     print('\n\n\n-----------------------------------REHAB GAME v0.1-----------------------------------')
@@ -176,19 +216,19 @@ def updateGameEnv():
         command = getInputKeys(command)
         env.render()
         observation, reward, done, info = env.step(command)
-        if (observation[0] == 0.6):
-            response = input("You Win! Start Again? (Y/N)\n")
-            if (response == 'Y'):
-                env.reset()
-            else:
-                print("Thanks for playing!\n\n\n")
-                pygame.quit()
-                sys.exit()
-        # time.sleep(0.01)
+        # if (done == True):
+        #     response = input("Session Complete! Start Again? (Y/N)\n")
+        #     if (response == 'Y'):
+        #         env.reset()
+        #     else:
+        #         print("Thanks for playing!\n\n\n")
+        #         pygame.quit()
+        #         sys.exit()
+        time.sleep(0.01)
 
 
 # --------------------------------------------------------------
-q = Queue()
+q = LifoQueue()
 
 # start UDP listener as a thread
 t1 = Thread(target=udpListenThread)
